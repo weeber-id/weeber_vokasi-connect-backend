@@ -1,0 +1,17 @@
+version: '3'
+services:
+  dealio-services2:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: weeber_vokasi-connect-backend
+    container_name: weeber_vokasi-connect-backend
+    environment:
+      - MYSQL_ADDRESS=mydatabase_sql
+    ports:
+      - "0.0.0.0:8011:5000"
+
+networks:
+  default:
+    external:
+      name: databases_db_network
