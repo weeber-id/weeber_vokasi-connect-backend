@@ -1,20 +1,20 @@
 from typing import List
+from sqlalchemy import Column, Integer, String, Date, Time, Text
 
 from lib.connector import db, ma
 
-class Link_tree_model(db.Model):
-  __tablename__ = "link_tree"
+class DepartmentModel(db.Model):
+  __tablename__ = "department"
 
-  id = db.Column(db.Integer, primary_key=True)
-  link = db.Column(db.String(255), nullable=False)
-  short_link = db.Column(db.String(255))
+  id = Column(Integer, primary_key=True)
+  name = Column(String(255))
 
   @classmethod
-  def find_by_id(cls, id) -> "Link_tree_model":
+  def find_by_id(cls, id) -> "DepartmentModel":
     return cls.query.filter_by(id=id).first()
 
   @classmethod
-  def get_all_from_db(cls) -> List["Link_tree_model"]:
+  def get_all_from_db(cls) -> List["DepartmentModel"]:
     return cls.query.all()
 
   def save_to_db(self):
@@ -31,6 +31,6 @@ class Link_tree_model(db.Model):
     db.session.commit()
 
 
-class Link_tree_schema(ma.ModelSchema):
+class DepartmentSchema(ma.ModelSchema):
   class Meta:
-    model = Link_tree_model
+    model = DepartmentModel
