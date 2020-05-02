@@ -1,6 +1,6 @@
 from envbash import load_envbash
 
-load_envbash("development.env")
+load_envbash("secret/development.env")
 
 if __name__ == "__main__":
   from main import app
