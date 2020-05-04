@@ -40,6 +40,15 @@ class CRUD:
       return {"message": message.SAVE_DATABASE_ERROR}, 400
 
 
+  @staticmethod
+  def create_from_model(Model):
+    try:
+      Model.save_to_db()
+      return {"message": message.SAVE_DATABASE_SUCCESS}, 201
+    except:
+      return {"message": message.SAVE_DATABASE_ERROR}, 400
+
+
   def update_by_id(self, ID, params:dict):
     if ID is None:
       return {"message": "id cannot be blank"}, 400
@@ -50,6 +59,15 @@ class CRUD:
 
     try:
       row.update_to_db(params)
+      return {"message": message.SAVE_DATABASE_SUCCESS}, 201
+    except:
+      return {"message": message.SAVE_DATABASE_ERROR}, 400
+
+
+  @staticmethod
+  def update_from_model(Model, params:dict):
+    try:
+      Model.update_to_db(params)
       return {"message": message.SAVE_DATABASE_SUCCESS}, 201
     except:
       return {"message": message.SAVE_DATABASE_ERROR}, 400

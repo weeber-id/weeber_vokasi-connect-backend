@@ -8,6 +8,8 @@ from lib.resources.image import ImageGCS
 from lib.resources.article import Articles, Article
 from lib.resources.aspiration import Aspirations, Aspiration
 from lib.resources.department import Departments, Department
+from lib.resources.event import Events, Event
+from lib.resources.portal_data_public import AllPortalData, PortalData
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_URI
@@ -26,3 +28,7 @@ api.add_resource(Aspirations, "/aspirations")
 api.add_resource(Aspiration, "/aspiration")
 api.add_resource(Departments, "/departments")
 api.add_resource(Department, "/department")
+api.add_resource(Events, "/events")
+api.add_resource(Event, "/event")
+api.add_resource(AllPortalData, "/all-portal-data")
+api.add_resource(PortalData, "/portal-data")

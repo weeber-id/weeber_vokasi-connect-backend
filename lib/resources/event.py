@@ -2,14 +2,14 @@ from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
 
-from lib.model.department import DepartmentModel, DepartmentSchema
+from lib.model.event import EventModel, EventSchema
 from lib.format import message, date, error
 from lib.controller.crud import CRUD
 
-Schema = DepartmentSchema()
-crud = CRUD(DepartmentModel, Schema)
+Schema = EventSchema()
+crud = CRUD(EventModel, Schema)
 
-class Departments(Resource):
+class Events(Resource):
   def get(self):
     try:
       return crud.read_all()
@@ -18,7 +18,7 @@ class Departments(Resource):
       return error.CustomExceptionResponse(e)
 
 
-class Department(Resource):
+class Event(Resource):
   def get(self):
     ID = request.args.get("id")
 
@@ -37,6 +37,7 @@ class Department(Resource):
 
     except Exception as e: 
       return error.CustomExceptionResponse(e)
+
 
   def put(self):
     ID = request.args.get("id")

@@ -2,14 +2,15 @@ from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
 
-from lib.model.department import DepartmentModel, DepartmentSchema
+from lib.model.portal_data_public import PortalDataModel, PortalDataSchema
+from lib.model.department import DepartmentModel
 from lib.format import message, date, error
 from lib.controller.crud import CRUD
 
-Schema = DepartmentSchema()
-crud = CRUD(DepartmentModel, Schema)
+Schema = PortalDataSchema()
+crud = CRUD(PortalDataModel, Schema)
 
-class Departments(Resource):
+class AllPortalData(Resource):
   def get(self):
     try:
       return crud.read_all()
@@ -18,7 +19,7 @@ class Departments(Resource):
       return error.CustomExceptionResponse(e)
 
 
-class Department(Resource):
+class PortalData(Resource):
   def get(self):
     ID = request.args.get("id")
 
@@ -33,17 +34,31 @@ class Department(Resource):
     inpt = request.get_json()
 
     try:
-      return crud.create(inpt)
+      ID = inpt["department_id"]
+      department = DepartmentModel.find_by_id(ID)
+      if department is None:
+        return {"message": message.DATA_NOT_FOUND}, 404
+      
+      inpt["department"] = department
+      modeldata = PortalDataModel(**inpt)
+      return CRUD.create_from_model(modeldata)
 
     except Exception as e: 
       return error.CustomExceptionResponse(e)
+
 
   def put(self):
     ID = request.args.get("id")
     inpt = request.get_json()
 
     try:
-      return crud.update_by_id(ID, inpt)
+      department = DepartmentModel.find_by_id(inpt["department_id"])
+      datamodel = PortalDataModel.find_by_id(ID)
+      if (department is None) or (datamodel is None):
+        return {"message": message.DATA_NOT_FOUND}, 404
+
+      inpt["department"] = department
+      return crud.update_from_model(datamodel, inpt)
 
     except Exception as e: 
       return error.CustomExceptionResponse(e)
