@@ -1,22 +1,24 @@
 from typing import List
-from sqlalchemy import Column, Integer, String, Date, Time, Text
+from sqlalchemy import Column, Integer, String
 
 from lib.connector import db, ma
 
-class EventModel(db.Model):
-  __tablename__ = "event"
+
+class RuangPrestasiModel(db.Model):
+  __tablename__ = "ruang_prestasi"
 
   id = Column(Integer, primary_key=True)
-  title = Column(String(255), nullable=False)
-  image = Column(String(255))
-  url = Column(String(255))
+  nama = Column(String(255))
+  jurusan = Column(String(255))
+  angkatan = Column(String(255))
+  prestasi = Column(String(255), nullable=False)
 
   @classmethod
-  def find_by_id(cls, id) -> "EventModel":
+  def find_by_id(cls, id) -> "RuangPrestasiModel":
     return cls.query.filter_by(id=id).first()
 
   @classmethod
-  def get_all_from_db(cls) -> List["EventModel"]:
+  def get_all_from_db(cls) -> List["RuangPrestasiModel"]:
     return cls.query.all()
 
   def save_to_db(self):
@@ -33,6 +35,6 @@ class EventModel(db.Model):
     db.session.commit()
 
 
-class EventSchema(ma.ModelSchema):
+class RuangPrestasiSchema(ma.ModelSchema):
   class Meta:
-    model = EventModel
+    model = RuangPrestasiModel

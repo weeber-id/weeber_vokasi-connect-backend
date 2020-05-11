@@ -14,6 +14,7 @@ class ArticleModel(db.Model):
   date_modified = Column(Date, nullable=False)
   time_modified = Column(Time, nullable=False)
   content = Column(Text, nullable=False)
+  thumbnail = Column(String(255))
 
   @classmethod
   def find_by_id(cls, id) -> "ArticleModel":
