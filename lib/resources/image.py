@@ -11,7 +11,7 @@ class ImageGCS(Resource):
       folder_name = request.form.get("folder_name")
 
       if folder_name is None:
-        return {"message": "component cannot be blank"}, 400
+        raise Exception("component cannot be blank", 400)
 
       image = ImageModel(file)
       url = image.upload_publicly(folder_name=folder_name)

@@ -1,9 +1,8 @@
 from flask import request
 from flask_restful import Resource
-from marshmallow import ValidationError
 
 from lib.model.article import ArticleModel, ArticleSchema
-from lib.format import message, date, error
+from lib.format import date, error
 from lib.controller.crud import CRUD
 
 Schema = ArticleSchema()

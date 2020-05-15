@@ -1,7 +1,7 @@
 from marshmallow import ValidationError
 
 from lib.format import message
-
+from lib.connector import db
 
 class CRUD:
   def __init__(self, Model, Schema):
@@ -9,77 +9,84 @@ class CRUD:
     self.Schema = Schema
 
 
+  def find_all(self, exception:bool=False, dump:bool=False):
+    rows = self.Model.query.all()
+    if exception:
+      if rows is None:
+        raise Exception(message.DATA_NOT_FOUND, 404)
+    
+    if dump:
+      return [self.Schema.dump(row) for row in rows]
+    return rows
+
+
+  def find_by_id(self, ID, exception:bool=False, dump:bool=False):
+    row = self.Model.query.filter_by(id=ID).first()
+    if exception:
+      if row is None:
+        raise Exception(message.DATA_NOT_FOUND, 404)
+
+    if dump:
+      return self.Schema.dump(row)
+    return row
+
+
   def read_all(self):
-    rows = self.Model.get_all_from_db()
+    rows = self.find_all(dump=True)
     return {
       "message": message.OK,
-      "data": [self.Schema.dump(row) for row in rows]
+      "data": rows
     }, 200
 
 
   def read_by_id(self, ID):
-    row = self.Model.find_by_id(ID)
-    if row is None:
-      return { "message": message.DATA_NOT_FOUND}, 404
-
+    row = self.find_by_id(ID, exception=True, dump=True)
     return {
       "message": message.OK,
-      "data": self.Schema.dump(row)}, 200
-    
+      "data": row}, 200
+
+
+  @staticmethod
+  def commit():
+    try:
+      db.session.commit()
+      return {"message": message.SAVE_DATABASE_SUCCESS}, 201
+    except:
+      raise Exception(message.SAVE_DATABASE_ERROR, 400)
+
 
   def create(self, params:dict):
     try:
       row = self.Schema.load(params)
     except ValidationError as e:
-      return {"message": e.messages}, 400
+      raise Exception(e.messages, 400)
 
-    try:
-      row.save_to_db()
-      return {"message": message.SAVE_DATABASE_SUCCESS}, 201
-    except:
-      return {"message": message.SAVE_DATABASE_ERROR}, 400
+    db.session.add(row)
+    return self.commit()
 
 
-  @staticmethod
-  def create_from_model(Model):
-    try:
-      Model.save_to_db()
-      return {"message": message.SAVE_DATABASE_SUCCESS}, 201
-    except:
-      return {"message": message.SAVE_DATABASE_ERROR}, 400
+  @classmethod
+  def create_from_model(cls, Model):
+    db.session.add(Model)
+    return cls.commit()
 
 
   def update_by_id(self, ID, params:dict):
-    if ID is None:
-      return {"message": "id cannot be blank"}, 400
+    row = self.find_by_id(ID, exception=True)
 
-    row = self.Model.find_by_id(ID)
-    if row is None:
-      return {"message": message.DATA_NOT_FOUND}, 404
-
-    try:
-      row.update_to_db(params)
-      return {"message": message.SAVE_DATABASE_SUCCESS}, 201
-    except:
-      return {"message": message.SAVE_DATABASE_ERROR}, 400
+    for key, value in params.items():
+      setattr(row, key, value)
+    return self.commit()
 
 
-  @staticmethod
-  def update_from_model(Model, params:dict):
-    try:
-      Model.update_to_db(params)
-      return {"message": message.SAVE_DATABASE_SUCCESS}, 201
-    except:
-      return {"message": message.SAVE_DATABASE_ERROR}, 400
+  @classmethod
+  def update_from_model(cls, Model, params:dict):
+    for key, value in params.items():
+      setattr(Model, key, value)
+    return cls.commit()
 
 
   def delete_by_id(self, ID):
-    if ID is None:
-      return {"message": "id cannot be blank"}, 400
-
-    row = self.Model.find_by_id(ID)
-    if row is None:
-      return {"message": message.DATA_NOT_FOUND}, 404
-
-    row.delete_from_db()
-    return {"message": message.DELETE_DATABASE_SUCCESS}, 200
+    row = self.find_by_id(ID, exception=True)
+    db.session.delete(row)
+    return self.commit()

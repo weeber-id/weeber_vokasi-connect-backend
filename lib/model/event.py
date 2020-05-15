@@ -1,36 +1,26 @@
 from typing import List
+from sqlalchemy.dialects.mysql import INTEGER
 from sqlalchemy import Column, Integer, String, Date, Time, Text
 
 from lib.connector import db, ma
 
 class EventModel(db.Model):
+  """
+  +-------+--------------+------+-----+---------+----------------+
+  | Field | Type         | Null | Key | Default | Extra          |
+  +-------+--------------+------+-----+---------+----------------+
+  | id    | int unsigned | NO   | PRI | NULL    | auto_increment |
+  | title | varchar(255) | NO   |     | NULL    |                |
+  | image | varchar(255) | YES  |     | NULL    |                |
+  | url   | varchar(255) | YES  |     | NULL    |                |
+  +-------+--------------+------+-----+---------+----------------+
+  """
   __tablename__ = "event"
 
-  id = Column(Integer, primary_key=True)
+  id = Column(INTEGER(unsigned=True), primary_key=True)
   title = Column(String(255), nullable=False)
   image = Column(String(255))
   url = Column(String(255))
-
-  @classmethod
-  def find_by_id(cls, id) -> "EventModel":
-    return cls.query.filter_by(id=id).first()
-
-  @classmethod
-  def get_all_from_db(cls) -> List["EventModel"]:
-    return cls.query.all()
-
-  def save_to_db(self):
-    db.session.add(self)
-    db.session.commit()
-
-  def update_to_db(self, params:dict):
-    for key, value in params.items():
-      setattr(self, key, value)
-    db.session.commit()
-
-  def delete_from_db(self):
-    db.session.delete(self)
-    db.session.commit()
 
 
 class EventSchema(ma.ModelSchema):

@@ -1,10 +1,22 @@
 from typing import List
 from sqlalchemy import Column, Integer, String, Date, Time, Text, ForeignKey
 from sqlalchemy.orm import relationship
+from marshmallow import fields
 
 from lib.connector import db, ma
+from lib.model.department import DepartmentSchema
 
 class PortalDataModel(db.Model):
+  """
+  +---------------+--------------+------+-----+---------+----------------+
+  | Field         | Type         | Null | Key | Default | Extra          |
+  +---------------+--------------+------+-----+---------+----------------+
+  | id            | int unsigned | NO   | PRI | NULL    | auto_increment |
+  | title         | varchar(255) | NO   |     | NULL    |                |
+  | department_id | int unsigned | NO   | MUL | NULL    |                |
+  | link          | varchar(255) | NO   |     | NULL    |                |
+  +---------------+--------------+------+-----+---------+----------------+
+  """
   __tablename__ = "portal_data_public"
 
   id = Column(Integer, primary_key=True)
@@ -14,28 +26,8 @@ class PortalDataModel(db.Model):
   
   department = relationship("DepartmentModel")
 
-  @classmethod
-  def find_by_id(cls, id) -> "PortalDataModel":
-    return cls.query.filter_by(id=id).first()
-
-  @classmethod
-  def get_all_from_db(cls) -> List["PortalDataModel"]:
-    return cls.query.all()
-
-  def save_to_db(self):
-    db.session.add(self)
-    db.session.commit()
-
-  def update_to_db(self, params:dict):
-    for key, value in params.items():
-      setattr(self, key, value)
-    db.session.commit()
-
-  def delete_from_db(self):
-    db.session.delete(self)
-    db.session.commit()
-
 
 class PortalDataSchema(ma.ModelSchema):
   class Meta:
     model = PortalDataModel
+  department = fields.Nested(DepartmentSchema)
