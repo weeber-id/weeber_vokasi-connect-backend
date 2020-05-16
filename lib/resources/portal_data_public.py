@@ -24,10 +24,16 @@ class AllPortalData(Resource):
 
 class PortalData(Resource):
   def get(self):
+    # OPTION 1 find by id
     ID = request.args.get("id")
 
+    # OPTION 2 find by category id
+    category_id = request.args.get("category_id")
+
     try:
-      return crud_portaldata.read_by_id(ID)
+      # if ID:
+      #   return crud_portaldata.read_by_id(ID)
+      return crud_portaldata.read({"category_id": category_id}, many=True)
 
     except Exception as e: 
       return error.CustomExceptionResponse(e)

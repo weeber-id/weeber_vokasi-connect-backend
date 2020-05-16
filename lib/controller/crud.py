@@ -9,6 +9,24 @@ class CRUD:
     self.Schema = Schema
 
 
+  def find(self, filter:dict, many=False, exception:bool=False, dump:bool=False):
+    if many:
+      row = self.Model.query.filter_by(**filter)
+    else:
+      row = self.Model.query.filter_by(**filter).first()
+
+    if exception:
+      if row is None:
+        raise Exception(message.DATA_NOT_FOUND, 404)
+
+    if dump:
+      if many:
+        return [self.Schema.dump(item) for item in row]
+      else:
+        return self.Schema.dump(row)
+    return row
+
+
   def find_all(self, exception:bool=False, dump:bool=False):
     rows = self.Model.query.all()
     if exception:
@@ -41,6 +59,13 @@ class CRUD:
 
   def read_by_id(self, ID):
     row = self.find_by_id(ID, exception=True, dump=True)
+    return {
+      "message": message.OK,
+      "data": row}, 200
+
+
+  def read(self, filter:dict, many=False):
+    row = self.find(filter, many=many, exception=False, dump=True)
     return {
       "message": message.OK,
       "data": row}, 200

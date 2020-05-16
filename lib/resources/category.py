@@ -18,36 +18,36 @@ class Categories(Resource):
       return CustomExceptionResponse(e)
 
 
-class Category(Resource):
-  def get(self):
-    ID = request.args.get("id")
+# class Category(Resource):
+#   def get(self):
+#     ID = request.args.get("id")
 
-    try:
-      return crud_category.read_by_id(ID)
-    except Exception as e:
-      return CustomExceptionResponse(e)
+#     try:
+#       return crud_category.read_by_id(ID)
+#     except Exception as e:
+#       return CustomExceptionResponse(e)
 
-  def post(self):
-    inpt = request.get_json()
+#   def post(self):
+#     inpt = request.get_json()
 
-    try:
-      return crud_category.create(inpt)
-    except Exception as e:
-      return CustomExceptionResponse(e)
+#     try:
+#       return crud_category.create(inpt)
+#     except Exception as e:
+#       return CustomExceptionResponse(e)
 
-  def put(self):
-    ID = request.args.get("id")
-    inpt = request.get_json()
+#   def put(self):
+#     ID = request.args.get("id")
+#     inpt = request.get_json()
 
-    try:
-      return crud_category.update_by_id(ID, inpt)
-    except Exception as e:
-      return CustomExceptionResponse(e)
+#     try:
+#       return crud_category.update_by_id(ID, inpt)
+#     except Exception as e:
+#       return CustomExceptionResponse(e)
 
-  def delete(self):
-    ID = request.args.get("id")
+#   def delete(self):
+#     ID = request.args.get("id")
 
-    try:
-      return crud_category.delete_by_id(ID)
-    except Exception as e:
-      return CustomExceptionResponse(e)
+#     try:
+#       return crud_category.delete_by_id(ID)
+#     except Exception as e:
+#       return CustomExceptionResponse(e)
