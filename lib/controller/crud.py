@@ -51,8 +51,8 @@ class CRUD:
     try:
       db.session.commit()
       return {"message": message.SAVE_DATABASE_SUCCESS}, 201
-    except:
-      raise Exception(message.SAVE_DATABASE_ERROR, 400)
+    except Exception as e:
+      raise Exception(str(e), 400)
 
 
   def create(self, params:dict):

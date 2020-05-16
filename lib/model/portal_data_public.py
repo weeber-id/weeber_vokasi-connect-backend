@@ -1,33 +1,36 @@
 from typing import List
+from sqlalchemy.dialects.mysql import INTEGER
 from sqlalchemy import Column, Integer, String, Date, Time, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from marshmallow import fields
 
 from lib.connector import db, ma
-from lib.model.department import DepartmentSchema
+from lib.model.category import CategorySchema
 
 class PortalDataModel(db.Model):
   """
-  +---------------+--------------+------+-----+---------+----------------+
-  | Field         | Type         | Null | Key | Default | Extra          |
-  +---------------+--------------+------+-----+---------+----------------+
-  | id            | int unsigned | NO   | PRI | NULL    | auto_increment |
-  | title         | varchar(255) | NO   |     | NULL    |                |
-  | department_id | int unsigned | NO   | MUL | NULL    |                |
-  | link          | varchar(255) | NO   |     | NULL    |                |
-  +---------------+--------------+------+-----+---------+----------------+
+  +-------------+--------------+------+-----+---------+----------------+
+  | Field       | Type         | Null | Key | Default | Extra          |
+  +-------------+--------------+------+-----+---------+----------------+
+  | id          | int unsigned | NO   | PRI | NULL    | auto_increment |
+  | title       | varchar(255) | NO   |     | NULL    |                |
+  | tanggal     | date         | NO   |     | NULL    |                |
+  | link        | varchar(255) | NO   |     | NULL    |                |
+  | category_id | int unsigned | NO   | MUL | NULL    |                |
+  +-------------+--------------+------+-----+---------+----------------+
   """
   __tablename__ = "portal_data_public"
 
-  id = Column(Integer, primary_key=True)
+  id = Column(INTEGER(unsigned=True), primary_key=True)
   title = Column(String(255), nullable=False)
-  department_id = Column(Integer, ForeignKey("department.id"), nullable=False)
+  tanggal = Column(Date, nullable=False)
   link = Column(String(255), nullable=False)
+  category_id = Column(INTEGER(unsigned=True), ForeignKey("category.id"), nullable=False)
   
-  department = relationship("DepartmentModel")
+  category = relationship("CategoryModel")
 
 
 class PortalDataSchema(ma.ModelSchema):
   class Meta:
     model = PortalDataModel
-  department = fields.Nested(DepartmentSchema)
+  category = fields.Nested(CategorySchema)

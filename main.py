@@ -7,6 +7,7 @@ from lib.connector import db, ma
 from lib.resources.image import ImageGCS
 from lib.resources.article import Articles, Article
 from lib.resources.aspiration import Aspirations, Aspiration
+from lib.resources.category import Categories, Category
 from lib.resources.department import Departments, Department
 from lib.resources.event import Events, Event
 from lib.resources.portal_data_public import AllPortalData, PortalData
@@ -27,6 +28,8 @@ api.add_resource(Articles, "/articles")
 api.add_resource(Article, "/article")
 api.add_resource(Aspirations, "/aspirations")
 api.add_resource(Aspiration, "/aspiration")
+api.add_resource(Categories, "/categories")
+api.add_resource(Category, "/category")
 api.add_resource(Departments, "/departments")
 api.add_resource(Department, "/department")
 api.add_resource(Events, "/events")
