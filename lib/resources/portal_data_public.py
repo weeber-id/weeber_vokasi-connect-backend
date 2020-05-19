@@ -31,8 +31,8 @@ class PortalData(Resource):
     category_id = request.args.get("category_id")
 
     try:
-      # if ID:
-      #   return crud_portaldata.read_by_id(ID)
+      if ID:
+        return crud_portaldata.read_by_id(ID)
       return crud_portaldata.read({"category_id": category_id}, many=True)
 
     except Exception as e: 

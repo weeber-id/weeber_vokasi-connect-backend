@@ -72,9 +72,11 @@ class CRUD:
 
 
   @staticmethod
-  def commit():
+  def commit(headers:list=None):
     try:
       db.session.commit()
+      if headers:
+        return {"message": message.SAVE_DATABASE_SUCCESS}, 201, headers
       return {"message": message.SAVE_DATABASE_SUCCESS}, 201
     except Exception as e:
       raise Exception(str(e), 400)

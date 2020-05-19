@@ -1,5 +1,6 @@
 from flask import request
 from flask_restful import Resource
+from flask_jwt_extended import jwt_required
 from marshmallow import ValidationError
 
 from lib.model.aspiration import AspirationModel, AspirationSchema
@@ -10,6 +11,7 @@ Schema = AspirationSchema()
 crud = CRUD(AspirationModel, Schema)
 
 class Aspirations(Resource):
+  @jwt_required
   def get(self):
     try:
       return crud.read_all()

@@ -1,9 +1,11 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restful import Api
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 
-from lib.environtment.address import database_URI
+from lib.environtment.address import database_URI, JWT_SECRET_KEY
 from lib.connector import db, ma
+from lib.resources.user import LoginAdmin, LogoutAdmin, Admin
 from lib.resources.image import ImageGCS
 from lib.resources.article import Articles, Article
 from lib.resources.aspiration import Aspirations, Aspiration
@@ -16,12 +18,21 @@ from lib.resources.ruang_prestasi import AllRuangPrestasi, RuangPrestasi
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_URI
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-CORS(app)
+app.config["PROPAGATE_EXCEPTIONS"] = True
+app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 
 db.init_app(app)
 ma.init_app(app)
 
+CORS(app)
 api = Api(app)
+jwt = JWTManager(app)
+
+api.add_resource(LoginAdmin, "/admin/login")
+api.add_resource(LogoutAdmin, "/admin/logout")
+api.add_resource(Admin, "/admin")
 
 api.add_resource(ImageGCS, "/image")
 api.add_resource(Articles, "/articles")
