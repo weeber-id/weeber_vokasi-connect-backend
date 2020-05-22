@@ -25,3 +25,4 @@ class UserAdminModel(db.Model):
 class UserAdminSchema(ma.ModelSchema):
   class Meta:
     model = UserAdminModel
+    load_only = ["password"]

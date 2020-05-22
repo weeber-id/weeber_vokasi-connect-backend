@@ -5,7 +5,7 @@ from flask_jwt_extended import JWTManager
 
 from lib.environtment.address import database_URI, JWT_SECRET_KEY
 from lib.connector import db, ma
-from lib.resources.user import LoginAdmin, LogoutAdmin, Admin
+from lib.resources.user import LoginAdmin, Admin
 from lib.resources.image import ImageGCS
 from lib.resources.article import Articles, Article
 from lib.resources.aspiration import Aspirations, Aspiration
@@ -20,8 +20,6 @@ app.config["SQLALCHEMY_DATABASE_URI"] = database_URI
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PROPAGATE_EXCEPTIONS"] = True
 app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
-app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 
 db.init_app(app)
 ma.init_app(app)
@@ -31,7 +29,7 @@ api = Api(app)
 jwt = JWTManager(app)
 
 api.add_resource(LoginAdmin, "/admin/login")
-api.add_resource(LogoutAdmin, "/admin/logout")
+# api.add_resource(LogoutAdmin, "/admin/logout")
 api.add_resource(Admin, "/admin")
 
 api.add_resource(ImageGCS, "/image")

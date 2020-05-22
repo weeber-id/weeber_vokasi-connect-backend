@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from flask_restful import Resource
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 import jwt
 import hashlib
 import datetime
@@ -25,34 +25,32 @@ class LoginAdmin(Resource):
       if user.password != pass_encrypt:
         raise Exception("Invalid credential", 400)
 
-      access_token = jwt.encode(
-        {
-          "identity": user.username,
-          "iat": datetime.datetime.now(),
-          "exp": datetime.datetime.now() + datetime.timedelta(days=1)
-        }, JWT_SECRET_KEY, algorithm="HS256").decode("utf-8")
-
-      headers = [
-        ("Set-Cookie", f"access_token_cookie={access_token}; Path=/; Max-Age={3600*24}; HttpOnly"),
-      ]
-      return {"message": "Login success"}, 200, headers
+      access_token = create_access_token(identity=user.username, expires_delta=datetime.timedelta(days=1))
+      return {"message": "Login success", "access_token": access_token}, 200
 
     except Exception as e:
       return CustomExceptionResponse(e)
 
 
-class LogoutAdmin(Resource):
-  def get(self):
-    try:
-      headers = [
-        ("Set-Cookie", "access_token_cookie=''; Path=/; Max-Age=1")
-      ]
-      return {"message": "Logout success"}, 200, headers
-    except Exception as e:
-      return CustomExceptionResponse(e)
+# class LogoutAdmin(Resource):
+#   def get(self):
+#     try:
+#       headers = [
+#         ("Set-Cookie", "access_token_cookie=''; Path=/; Max-Age=1")
+#       ]
+#       return {"message": "Logout success"}, 200, headers
+#     except Exception as e:
+#       return CustomExceptionResponse(e)
 
 
 class Admin(Resource):
+  @jwt_required
+  def get(self):
+    try:
+      return crud_useradmin.read_all()
+    except Exception as e:
+      return CustomExceptionResponse(e)
+
   @jwt_required
   def post(self):
     try:
@@ -89,11 +87,7 @@ class Admin(Resource):
 
       new_pass_encrypt = hashlib.md5(inpt["new_password"].encode()).hexdigest()
       admin.password = new_pass_encrypt
-
-      headers = [
-        ("Set-Cookie", "access_token_cookie=''; Path=/; Max-Age=1")
-      ]
-      return crud_useradmin.commit(headers)
+      return crud_useradmin.commit()
     except Exception as e:
       return CustomExceptionResponse(e)
 
