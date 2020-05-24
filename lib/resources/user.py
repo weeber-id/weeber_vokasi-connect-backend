@@ -43,11 +43,34 @@ class LoginAdmin(Resource):
 #       return CustomExceptionResponse(e)
 
 
+class CheckSession(Resource):
+  def get(self):
+    try:
+      access_token = request.headers.get("Authorization").split(" ")[-1]
+      payload = jwt.decode(access_token, JWT_SECRET_KEY, verify=True)
+      
+      now = datetime.datetime.now()
+      exp = datetime.datetime.fromtimestamp(payload["exp"])
+
+      if (now < exp):
+        return {"message": "session valid"}, 200
+      return {"message": "session expired", "code": 401}, 401
+
+    except Exception as e:
+      return CustomExceptionResponse(e)
+
+
 class Admin(Resource):
   @jwt_required
   def get(self):
     try:
+      mode = request.args.get("mode")
+      if mode == "self":
+        username = get_jwt_identity()
+        return crud_useradmin.read({"username": username})
+      
       return crud_useradmin.read_all()
+    
     except Exception as e:
       return CustomExceptionResponse(e)
 
