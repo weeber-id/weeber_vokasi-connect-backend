@@ -1,3 +1,4 @@
+from sqlalchemy import desc
 from marshmallow import ValidationError
 
 from lib.format import message
@@ -9,11 +10,16 @@ class CRUD:
     self.Schema = Schema
 
 
-  def find(self, filter:dict, many=False, exception:bool=False, dump:bool=False):
+  def find(self, filter:dict, many=False, reverse_id=False, exception:bool=False, dump:bool=False):
     if many:
-      row = self.Model.query.filter_by(**filter)
+      if reverse_id:
+        row = self.Model.query.filter_by(**filter).order_by(desc(self.Model.id))
+      else:
+        row = self.Model.query.filter_by(**filter)
+    
     else:
       row = self.Model.query.filter_by(**filter).first()
+
 
     if exception:
       if row is None:
@@ -27,8 +33,12 @@ class CRUD:
     return row
 
 
-  def find_all(self, exception:bool=False, dump:bool=False):
-    rows = self.Model.query.all()
+  def find_all(self, reverse_id:bool=False, exception:bool=False, dump:bool=False):
+    if reverse_id:
+      rows = self.Model.query.order_by(desc(self.Model.id)).all()
+    else:
+      rows = self.Model.query.all()
+    
     if exception:
       if rows is None:
         raise Exception(message.DATA_NOT_FOUND, 404)
@@ -49,8 +59,8 @@ class CRUD:
     return row
 
 
-  def read_all(self):
-    rows = self.find_all(dump=True)
+  def read_all(self, reverse_id=False):
+    rows = self.find_all(reverse_id=reverse_id, dump=True)
     return {
       "message": message.OK,
       "data": rows
@@ -64,8 +74,8 @@ class CRUD:
       "data": row}, 200
 
 
-  def read(self, filter:dict, many=False):
-    row = self.find(filter, many=many, exception=False, dump=True)
+  def read(self, filter:dict, many=False, reverse_id=False):
+    row = self.find(filter, many=many, exception=False, dump=True, reverse_id=reverse_id)
     return {
       "message": message.OK,
       "data": row}, 200

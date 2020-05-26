@@ -12,7 +12,7 @@ crud = CRUD(RuangPrestasiModel, Schema)
 class AllRuangPrestasi(Resource):
   def get(self):
     try:
-      return crud.read_all()
+      return crud.read_all(reverse_id=True)
 
     except Exception as e:
       return error.CustomExceptionResponse(e)

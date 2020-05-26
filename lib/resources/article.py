@@ -11,7 +11,7 @@ article_crud = CRUD(ArticleModel, Schema)
 class Articles(Resource):
   def get(self):
     try:
-      return article_crud.read_all()
+      return article_crud.read_all(reverse_id=True)
 
     except Exception as e:
       return error.CustomExceptionResponse(e)

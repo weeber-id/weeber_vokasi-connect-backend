@@ -16,7 +16,7 @@ crud_category = CRUD(CategoryModel, category_schema)
 class AllPortalData(Resource):
   def get(self):
     try:
-      return crud_portaldata.read_all()
+      return crud_portaldata.read_all(reverse_id=True)
 
     except Exception as e:
       return error.CustomExceptionResponse(e)
@@ -33,7 +33,7 @@ class PortalData(Resource):
     try:
       if ID:
         return crud_portaldata.read_by_id(ID)
-      return crud_portaldata.read({"category_id": category_id}, many=True)
+      return crud_portaldata.read({"category_id": category_id}, many=True, reverse_id=True)
 
     except Exception as e: 
       return error.CustomExceptionResponse(e)

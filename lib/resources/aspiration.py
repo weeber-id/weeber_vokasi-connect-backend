@@ -14,7 +14,7 @@ class Aspirations(Resource):
   @jwt_required
   def get(self):
     try:
-      return crud.read_all()
+      return crud.read_all(reverse_id=True)
 
     except Exception as e:
       return error.CustomExceptionResponse(e)
